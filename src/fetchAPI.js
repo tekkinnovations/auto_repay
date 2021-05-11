@@ -2,12 +2,12 @@ const fetch = require('node-fetch');
 
 
 //getAPI = async function (leftover, baseURL = 'https://lcd.terra.dev/'){
-getAPI = async function (leftover, baseURL = 'https://tequila-lcd.terra.dev/'){
+const getAPI = async function (leftover, baseURL = 'https://tequila-lcd.terra.dev/'){
     if (leftover){
         let getted = false
         while(!getted){
             try{
-                a = await fetch(baseURL + leftover, {
+                const a = await fetch(baseURL + leftover, {
                     headers: {
                         'accept': 'application/json'
                     }

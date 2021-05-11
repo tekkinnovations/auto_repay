@@ -317,8 +317,8 @@ class Repay{
     }
 }
 
-repayHandler = new Repay
-myAddress = repayHandler.wallet.key.accAddress
+const repayHandler = new Repay
+const myAddress = repayHandler.wallet.key.accAddress
 
 async function aUST_process(insufficientUST){
     let aUST_balance = await fetchAPI.aUST_balance(myAddress)
@@ -447,7 +447,7 @@ async function check_option(){
             temp_option = ['aUST']
         }else if (option.search(/LP/i) != -1){ //checking LP
             temp_option = ['LP']
-            for(token of lp_list){
+            for(const token of lp_list){
                 if (option.search(RegExp(token, 'i')) != -1){
                     temp_option.push(token)
                     break;
@@ -501,7 +501,8 @@ async function check_option(){
 
 // you must have at least 1UST
 async function check_remain_UST(){
-    let UST_remain = await fetchAPI.ust_balance(myAddress)
+  let UST_remain = await fetchAPI.ust_balance(myAddress)
+  console.log("Remaining: " + UST_remain);
     if (UST_remain < 1000000){
         console.log('You must have at least 1UST')
         return false
