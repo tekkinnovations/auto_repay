@@ -432,7 +432,7 @@ var borrowLimit = 1;
 var loanAmount = 0;
 var target_percent = percent2number(option.target_percent);
 var trigger_percent = percent2number(option.trigger_percent);
-var belowTrigger = -1; //for someone who needs reborrow automatically
+var belowTrigger = 1; //for someone who needs reborrow automatically
 var max_premium_rate = percent2number(option.max_premium_rate);
 var get_UST_option = option.get_UST_option;
 var instant_burn = option.instant_burn
@@ -530,14 +530,20 @@ async function repay_amount(target_percent: number){
 
 async function update_state(){
     //update value
-    borrowLimit = await fetchAPI.borrow_limit(myAddress)
-    loanAmount = await fetchAPI.loan_amount(myAddress)
-    percentNow = loanAmount/borrowLimit
+    borrowLimit = await fetchAPI.borrow_limit(myAddress);
+    loanAmount = await fetchAPI.loan_amount(myAddress);
+    percentNow = loanAmount/borrowLimit;
+    if (loanAmount == 0) {
+        percentNow = 0;
+    }
 
-    console.log(moment().format('YYYY-MM-DD hh:mm:ss A'))
-    console.log("Up to borrow limit: " + (percentNow*100).toFixed(2) + "%\n")
+    console.log(moment().format('YYYY-MM-DD hh:mm:ss A'));
+    console.log("loan amount: ", loanAmount);
+    console.log("borrow limit: ", borrowLimit);
+    console.log("percent now: ", percentNow);
+    console.log("Up to borrow limit: " + (percentNow*100).toFixed(2) + "%\n");
 
-    return percentNow
+    return percentNow;
 }
 
 async function getting_UST_process(UST_remain: number, total_needed_amount: number){
@@ -582,6 +588,7 @@ async function main(){
                     nowPercent = await update_state()
                 }
             }else if(nowPercent < belowTrigger){
+                console.log("Now percent below below trigger. Try to borrow UST.")
                 let ust_amount = (target_percent - percentNow) / percentNow * loanAmount
                 await repayHandler.borrow_ust(ust_amount)
             }
