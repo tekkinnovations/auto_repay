@@ -55,7 +55,7 @@ class Repay{
         this.wallet = new Wallet(lcd, key);
     }
 
-    async execute(msgs: MsgExecuteContract[], type = 'else'){
+    async execute(msgs: typeof MsgExecuteContract[], type = 'else'){
         let fee = new StdFee(666666, '100000uusd')
         
         if(type == 'ANC'){
@@ -78,7 +78,7 @@ class Repay{
         }
     }
     
-    async pollingTx(txHash) {
+    async pollingTx(txHash: any) {
         let isFound = false;    
         while (!isFound) {
           try {
@@ -91,7 +91,7 @@ class Repay{
     }
 
     //repay
-    async repay(amount){
+    async repay(amount: any){
         console.log('Repaying ' + (amount/1e6).toFixed(2)+'UST...')
         let coin = new Coin('uusd', amount)
         let coins = new Coins
@@ -109,7 +109,7 @@ class Repay{
 
     
     //withdraw ust from anchor deposit
-    async withdraw_aUST(aust_amount){
+    async withdraw_aUST(aust_amount: any){
         console.log('Withdrawing ' + (aust_amount/1e6).toFixed(2)+'aUST...')    
         let withdraw = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -129,7 +129,7 @@ class Repay{
     
     //anchor lp withdraw
     //1. unstake lp token
-    async unstake_ANC_LP(LP_token_amount){
+    async unstake_ANC_LP(LP_token_amount: any) {
         console.log('Unstaking ANC-UST LP Token...')
         let unstake = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -145,7 +145,7 @@ class Repay{
     }
 
     //2. withdraw lp
-    async withdraw_ANC_LP(LP_token_amount){
+    async withdraw_ANC_LP(LP_token_amount: any){
         console.log('Withdrawing ANC-UST LP...')
         let withdraw = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -165,8 +165,8 @@ class Repay{
 
     //mirror lp withdraw
     //1. unstake lp token
-    async unstake_mAsset_LP(LP_token_amount, token, symbol){
-        console.log('Unstaking '+symbol+'-UST LP Token...')
+    async unstake_mAsset_LP(LP_token_amount: number, token: string, symbol: string){
+        console.log('Unstaking '+symbol+'-UST LP numberken...')
         let unstake = new MsgExecuteContract(
             this.wallet.key.accAddress,
             MIR_LP_staking,
@@ -182,7 +182,7 @@ class Repay{
     }
 
     //2. withdraw lp
-    async withdraw_mAsset_LP(LP_token_amount, token_data, symbol){
+    async withdraw_mAsset_LP(LP_token_amount: number, token_data: any, symbol: string){
         console.log('Withdrawing '+symbol+'-UST LP...')
         let withdraw = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -201,7 +201,7 @@ class Repay{
 
     //instant burn process
     //1. withdraw bLUNA
-    async withdraw_bLUNA(amount){
+    async withdraw_bLUNA(amount: number){
         console.log('Withdrawing ' + (amount/1e6).toFixed(2) +'bLUNA...')
         let unlock = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -228,7 +228,7 @@ class Repay{
     }
 
     //2. instant burn (bluna to luna)
-    async instant_burn(burnamount, max_premium_rate){      
+    async instant_burn(burnamount: number, max_premium_rate: number) {      
         console.log('Instant Burning...')
         let inmsg = Buffer.from('{"swap":{"belief_price":"'+ (1+max_premium_rate).toString() + '","max_spread":"0"}}').toString('base64')
         let swap = new MsgExecuteContract(
@@ -247,7 +247,7 @@ class Repay{
     }
 
     //3. swap luna to ust
-    async luna2Ust(swapamount){
+    async luna2Ust(swapamount: number) {
         console.log('LUNA -> UST Swapping...')
         let receive = await fetchAPI.ust_receive_amount(swapamount)
         let swap = new MsgExecuteContract(
@@ -273,7 +273,7 @@ class Repay{
         await this.execute([swap, swapMsg]);
     }    
 
-    async provide_bLUNA(provide_amount){
+    async provide_bLUNA(provide_amount: number) {
         let deposit = new MsgExecuteContract(
             this.wallet.key.accAddress,
             bLUNA_token,
@@ -301,7 +301,7 @@ class Repay{
         await this.execute([deposit, lock], 'ANC')
     }
 
-    async borrow_ust(ust_amount){
+    async borrow_ust(ust_amount: number){
         console.log('Borrowing UST...')
         let borrow = new MsgExecuteContract(
             this.wallet.key.accAddress,
@@ -362,7 +362,7 @@ async function ANC_LP_process(insufficientUST: number){
 }
 
 // for MIR and mAsset
-async function mAsset_LP_process(insufficientUST, symbol){
+async function mAsset_LP_process(insufficientUST: number, symbol: string){
     let LP_data = await fetchAPI.mAsset_LP_data(myAddress, symbol)
     let LP_staking = LP_data.LP_staking_amount
     let LP_balance = LP_data.LP_balance
@@ -394,7 +394,7 @@ async function mAsset_LP_process(insufficientUST, symbol){
 // Warning! Instant_burn is not a good option. In some conditions liquidation could be a better option
 // Instant burn process is not a process that make a nowPercent to the targetPrecent.
 // The process will drag down a nowPercent just 5~5.2% 
-async function instant_burn_process(nowPercent){
+async function instant_burn_process(nowPercent: number){
     let percent_diff = Math.min(0.05, 0.985-nowPercent) //percent diff after withdraw bLUNA
     let provided_bLUNA = await fetchAPI.provided_bLUNA_amount(myAddress)
     let withdraw_amount = provided_bLUNA-provided_bLUNA/(1+percent_diff/nowPercent)
@@ -414,7 +414,7 @@ async function instant_burn_process(nowPercent){
     }
 }
 
-function percent2number(input){
+function percent2number(input: string) {
     if (/%$/.exec(input)){
         return Number(input.slice(0,input.length-1))/100
     }else{
@@ -511,7 +511,7 @@ async function check_remain_UST(){
     }
 }
 
-async function get_UST(option, insufficientUST){
+async function get_UST(option: string[], insufficientUST: number) {
 
     if (option[0] == 'aUST'){
         await aUST_process(insufficientUST)
@@ -524,7 +524,7 @@ async function get_UST(option, insufficientUST){
     }
 }
 
-async function repay_amount(target_percent){
+async function repay_amount(target_percent: number){
     return (percentNow - target_percent) / percentNow * loanAmount
 }
 
@@ -540,7 +540,7 @@ async function update_state(){
     return percentNow
 }
 
-async function getting_UST_process(UST_remain, total_needed_amount){
+async function getting_UST_process(UST_remain: number, total_needed_amount: number){
     for (option of get_UST_option){
         await get_UST(option, total_needed_amount - UST_remain)
         UST_remain = await fetchAPI.ust_balance(myAddress)
@@ -550,7 +550,7 @@ async function getting_UST_process(UST_remain, total_needed_amount){
     }
 }
 
-function sleep(ms) {
+function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
