@@ -8,13 +8,14 @@
     "dotenv": "^8.2.0",
     "fs": "0.0.1-security",
     "moment": "2.29.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "start": "node ./dist/src/index.js",
+    "start": "node --enable-source-maps ./dist/src/index.js",
     "build-dist": "./node_modules/typescript/bin/tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

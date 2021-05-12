@@ -55,7 +55,7 @@ class Repay{
         this.wallet = new Wallet(lcd, key);
     }
 
-    async execute(msgs, type = 'else'){
+    async execute(msgs: MsgExecuteContract[], type = 'else'){
         let fee = new StdFee(666666, '100000uusd')
         
         if(type == 'ANC'){
