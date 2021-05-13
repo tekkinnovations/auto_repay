@@ -13,6 +13,7 @@
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.10",
     "typescript": "^4.2.4"
   },
   "scripts": {

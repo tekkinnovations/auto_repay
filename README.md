@@ -29,6 +29,6 @@ ANCHORCLI_NETWORK=tequila-0004 anchorcli x \
   --amount 500 \
   --validator terravaloper1krj7amhhagjnyg2tkkuh6l0550y733jnjnnlzy \
   --from test-auto-repay \
-  --gas auto
+  --gas auto \
   --fees 1000000uusd
 ```

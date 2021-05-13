@@ -1,7 +1,8 @@
-const { MnemonicKey, LCDClient, MsgExecuteContract, MsgSwap, Wallet, Coin, Coins, StdFee} = require('@terra-money/terra.js');
-const fetchAPI = require('./fetchAPI')
-const fs = require('fs')
-const moment = require('moment');
+import { MnemonicKey, LCDClient, MsgSwap, Wallet, Coin, Coins, StdFee, Msg, MsgExecuteContract, CreateTxOptions } from '@terra-money/terra.js';
+import fetchAPI from './fetchAPI';
+import fs from 'fs';
+import moment from 'moment';
+
 require('dotenv').config();
 
 const MNEMONIC = process.env.MNEMONIC != '' ? process.env.MNEMONIC : process.argv[2];
@@ -41,7 +42,7 @@ const MIR_LP = 'terra1zrryfhlrpg49quz37u90ck6f396l4xdjs5s08j'
 
 class Repay{
     
-    wallet
+    wallet: Wallet;
 
     constructor(){
         const key = new MnemonicKey({
@@ -55,7 +56,7 @@ class Repay{
         this.wallet = new Wallet(lcd, key);
     }
 
-    async execute(msgs: typeof MsgExecuteContract[], type = 'else'){
+    async execute(msgs: Msg[], type = 'else'){
         let fee = new StdFee(666666, '100000uusd')
         
         if(type == 'ANC'){
@@ -67,7 +68,11 @@ class Repay{
         }
 
         try{
-            const tx = await this.wallet.createAndSignTx({msgs, fee});
+          const options: CreateTxOptions = {
+            msgs,
+            fee
+          }
+            const tx = await this.wallet.createAndSignTx(options);
             const result = await this.wallet.lcd.tx.broadcastSync(tx);    
             await this.pollingTx(result.txhash)
             console.log('Transaction Completed\n')
